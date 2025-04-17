@@ -18,7 +18,7 @@ parser.add_argument('--kernel_size', type=int, default=5)
 parser.add_argument('--dilation', type=int, default=1)
 
 parser.add_argument('--index_from', type=int, default=0, help='when index starts from 1 or 0 or else')
-parser.add_argument('--zpad', type=int, default=3, help='zero padding of frame name.')
+parser.add_argument('--zpad', type=int, default=4, help='zero padding of frame name.')
 
 parser.add_argument('--input_video', type=str, default='./sample_video')
 parser.add_argument('--output_video', type=str, default='./interpolated_video')
@@ -62,17 +62,22 @@ def main():
 
     base_dir = args.input_video
 
+    # check if output video directory exists
     if not os.path.exists(args.output_video):
         os.makedirs(args.output_video)
 
-    frame_len = len([name for name in os.listdir(base_dir) if os.path.isfile(os.path.join(base_dir, name))])
+    # Get all image files in the input directory and sort them
+    frame_files = [f for f in os.listdir(base_dir) if os.path.isfile(os.path.join(base_dir, f))]
+    frame_files = sorted(frame_files)  # Sort files alphabetically
+
+    frame_len = len(frame_files)
 
     for idx in range(frame_len - 1):
-        idx += args.index_from
+        
         print(idx, '/', frame_len - 1, end='\r')
 
-        frame_name1 = base_dir + '/' + str(idx).zfill(args.zpad) + '.png'
-        frame_name2 = base_dir + '/' + str(idx + 1).zfill(args.zpad) + '.png'
+        frame_name1 = os.path.join(base_dir, frame_files[idx])
+        frame_name2 = os.path.join(base_dir, frame_files[idx + 1])
 
         frame1 = to_variable(transform(Image.open(frame_name1)).unsqueeze(0))
         frame2 = to_variable(transform(Image.open(frame_name2)).unsqueeze(0))
@@ -82,19 +87,20 @@ def main():
 
         # interpolate
         frame1_normalized = frame1.clone()
-        frame1_normalized = (frame1_normalized - frame1_normalized.min()) / (frame1_normalized.max() - frame1_normalized.min())
-        save_image(frame1_normalized, args.output_video + '/' + str((idx - args.index_from) * 2 + args.index_from).zfill(args.zpad) + '.png')
+        # !Warning!: Normaliztaion might cause the interpolated frame to be dimmer than the original frames.
+        # frame1_normalized = (frame1_normalized - frame1_normalized.min()) / (frame1_normalized.max() - frame1_normalized.min())
+        save_image(frame1_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + args.index_from).zfill(args.zpad) + '.png')
         frame_out_normalized = frame_out.clone()
-        frame_out_normalized = (frame_out_normalized - frame_out_normalized.min()) / (frame_out_normalized.max() - frame_out_normalized.min())
-        save_image(frame_out_normalized, args.output_video + '/' + str((idx - args.index_from) * 2 + 1 + args.index_from).zfill(args.zpad) + '.png')
+        # frame_out_normalized = (frame_out_normalized - frame_out_normalized.min()) / (frame_out_normalized.max() - frame_out_normalized.min())
+        save_image(frame_out_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + 5 + args.index_from).zfill(args.zpad) + '.png')
 
     # last frame
     print(frame_len - 1, '/', frame_len - 1)
-    frame_name_last = base_dir + '/' + str(frame_len + args.index_from - 1).zfill(args.zpad) + '.png'
+    frame_name_last = os.path.join(base_dir, frame_files[-1])
     frame_last = to_variable(transform(Image.open(frame_name_last)).unsqueeze(0))
     frame_last_normalized = frame_last.clone()
     frame_last_normalized = (frame_last_normalized - frame_last_normalized.min()) / (frame_last_normalized.max() - frame_last_normalized.min())
-    save_image(frame_last_normalized, args.output_video + '/' + str((frame_len - 1) * 2 + args.index_from).zfill(args.zpad) + '.png')
+    save_image(frame_last_normalized, os.path.join(args.output_video, f"frame_{(frame_len - 1) * 2:04d}.png"))
 
 
 if __name__ == "__main__":
