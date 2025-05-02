@@ -5,6 +5,7 @@ from typing import List, Tuple
 
 
 class VideoGenerator:
+    """Video Generator from Frames Sequences"""
     # Supported video formats and corresponding codecs
     VIDEO_CODECS = {
         '.avi': 'DIVX',
@@ -13,23 +14,30 @@ class VideoGenerator:
     }
     
     def __init__(self, 
-                 image_folder: str, 
+                 frame_path: str, 
                  video_path: str, 
                  fps: int = 25,
                  img_extensions: Tuple[str, ...] = ('.png', '.jpg', '.jpeg')):
-        self.image_folder = image_folder
+        """Initialization
+        Args:
+            frame_path (Union[str, Path]): Input directory containing frames.
+            video_path (Union[str, Path]): Output directory for generated video.
+            img_format (str): Image format for output frames ('png' or 'jpg').
+            scale (float): Scale factor for resizing frames.
+        """
+        self.frame_path = frame_path
         self.video_path = video_path
         self.fps = fps
         self.img_extensions = img_extensions
         
         # Ensure directories exist
-        os.makedirs(image_folder, exist_ok=True)
+        os.makedirs(frame_path, exist_ok=True)
         if os.path.dirname(video_path):
             os.makedirs(os.path.dirname(video_path), exist_ok=True)
     
     def _get_sorted_images(self) -> List[str]:
         """Get and sort image files from directory"""
-        images = [img for img in os.listdir(self.image_folder) 
+        images = [img for img in os.listdir(self.frame_path) 
                  if img.lower().endswith(self.img_extensions)]
         images.sort()  # Sort by filename
         return images
@@ -43,11 +51,11 @@ class VideoGenerator:
         try:
             images = self._get_sorted_images()
             if not images:
-                print(f"Error: No image files found in {self.image_folder}")
+                print(f"Error: No image files found in {self.frame_path}")
                 return False
                 
             # Get dimensions from first image
-            first_image_path = os.path.join(self.image_folder, images[0])
+            first_image_path = os.path.join(self.frame_path, images[0])
             frame = cv2.imread(first_image_path)
             if frame is None:
                 print(f"Error: Failed to read image {first_image_path}")
@@ -60,12 +68,17 @@ class VideoGenerator:
             
             # Write all frames
             for idx, image in enumerate(images, 1):
-                img_path = os.path.join(self.image_folder, image)
+                img_path = os.path.join(self.frame_path, image)
                 frame = cv2.imread(img_path)
                 if frame is None:
                     print(f"Warning: Skipping unreadable image {image}")
                     continue
-                video.write(frame)
+                
+                # Select specific frames to create low fps video if needed
+                if idx % 3 == 0:  # Example condition for low fps
+                    video.write(frame)
+
+                # video.write(frame)
                 print(f"\rProcessing: {idx}/{len(images)}", end='')
             
             video.release()
@@ -87,12 +100,12 @@ def setup_arg_parser() -> argparse.ArgumentParser:
     # Required arguments
     parser.add_argument(
         '--input_dir',
-        default='./output_interp_frames',
+        default='../Sample/Video2Frames/sample_vid',
         help='Directory containing input images'
     )
     parser.add_argument(
         '--output_file',
-        default='./output_frms2vid/output_video.avi',
+        default='../Sample/Frames2Video/combined_video.mp4',
         help='Path for output video file'
     )
     
@@ -135,7 +148,7 @@ def main():
     
     # Create and run video generator
     generator = VideoGenerator(
-        image_folder=args.input_dir,
+        frame_path=args.input_dir,
         video_path=args.output_file,
         fps=args.fps,
         img_extensions=tuple(ext.lower() for ext in args.extensions.split(',')))

@@ -7,35 +7,35 @@ from typing import Union
 from typing import List, Tuple
 
 class VideoSplitter:
-    """Video Frame Extractor"""
+    """Split Video into Frame Sequences"""
     
     def __init__(self,
-                 input_path: Union[str, Path],
-                 output_root: Union[str, Path],
+                 video_path: Union[str, Path],
+                 frame_path: Union[str, Path],
                  img_format: str = 'png',
                  scale: float = 1.0):
         """Initialization
         Args:
-            input_path (Union[str, Path]): Input video file or directory containing videos.
-            output_root (Union[str, Path]): Output directory for extracted frames.
+            video_path (Union[str, Path]): Input video file or directory containing videos.
+            frame_path (Union[str, Path]): Output directory for extracted frames.
             img_format (str): Image format for output frames ('png' or 'jpg').
             scale (float): Scale factor for resizing frames.
         """
-        self.input_path = Path(input_path)
-        self.output_root = Path(output_root)
+        self.video_path = Path(video_path)
+        self.frame_path = Path(frame_path)
         self.img_format = img_format.lower()
         self.scale = scale
         self.supported_formats = ('.mp4', '.avi', '.mov', '.mkv')
         
         # Make sure the output directory exists
-        self.output_root.mkdir(parents=True, exist_ok=True)
+        self.frame_path.mkdir(parents=True, exist_ok=True)
         
     def _get_video_files(self) -> List[Path]:
         """Get video files from input path"""
-        if self.input_path.is_dir():
-            return [f for f in self.input_path.iterdir() 
+        if self.video_path.is_dir():
+            return [f for f in self.video_path.iterdir() 
                     if f.suffix.lower() in self.supported_formats]
-        return [self.input_path] if self.input_path.exists() else []
+        return [self.video_path] if self.video_path.exists() else []
     
     def _get_metadata(self, video_path: Path) -> dict:
         """Get video metadata"""
@@ -62,7 +62,7 @@ class VideoSplitter:
         metadata = self._get_metadata(video_path)
         
         # Create output directory for this video
-        output_dir = self.output_root / video_path.stem
+        output_dir = self.frame_path / video_path.stem
         output_dir.mkdir(exist_ok=True)
         
         # save metadata to JSON
@@ -114,12 +114,12 @@ def main():
     parser.add_argument(
         '--input_dir',
         default='../Sample/sample_vid.mp4',
-        help='Directory containing input images'
+        help='Directory containing input videos'
     )
     parser.add_argument(
-        '--output_file',
+        '--output_dir',
         default='../Sample/Video2Frames',
-        help='Path for output video file'
+        help='Directory for output video frames'
     )
     parser.add_argument(
         '--img_format',
@@ -138,8 +138,8 @@ def main():
     args = parser.parse_args()
     
     splitter = VideoSplitter(
-        input_path=args.input_dir,
-        output_root=args.output_file,
+        video_path=args.input_dir,
+        frame_path=args.output_dir,
         img_format=args.img_format,
         scale=args.scale
     )

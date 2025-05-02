@@ -67,6 +67,7 @@ def main():
         os.makedirs(args.output_video)
 
     # Get all image files in the input directory and sort them
+    valid_extensions = ('.png', '.jpg', '.jpeg', '.bmp')
     frame_files = [f for f in os.listdir(base_dir) if os.path.isfile(os.path.join(base_dir, f))]
     frame_files = sorted(frame_files)  # Sort files alphabetically
 
@@ -89,18 +90,23 @@ def main():
         frame1_normalized = frame1.clone()
         # !Warning!: Normaliztaion might cause the interpolated frame to be dimmer than the original frames.
         # frame1_normalized = (frame1_normalized - frame1_normalized.min()) / (frame1_normalized.max() - frame1_normalized.min())
-        save_image(frame1_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + args.index_from).zfill(args.zpad) + '.png')
+        # save_image(frame1_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + args.index_from).zfill(args.zpad) + '.png')
+        save_image(frame1_normalized, os.path.join(args.output_video, f"frame_{((idx - args.index_from) * 10 + args.index_from):04d}.png"))
+        
         frame_out_normalized = frame_out.clone()
         # frame_out_normalized = (frame_out_normalized - frame_out_normalized.min()) / (frame_out_normalized.max() - frame_out_normalized.min())
-        save_image(frame_out_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + 5 + args.index_from).zfill(args.zpad) + '.png')
+        # save_image(frame_out_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + 5 + args.index_from).zfill(args.zpad) + '.png')
+        save_image(frame_out_normalized, os.path.join(args.output_video, f"frame_{((idx - args.index_from) * 10 + 5 + args.index_from):04d}.png"))
 
     # last frame
     print(frame_len - 1, '/', frame_len - 1)
     frame_name_last = os.path.join(base_dir, frame_files[-1])
     frame_last = to_variable(transform(Image.open(frame_name_last)).unsqueeze(0))
     frame_last_normalized = frame_last.clone()
-    frame_last_normalized = (frame_last_normalized - frame_last_normalized.min()) / (frame_last_normalized.max() - frame_last_normalized.min())
-    save_image(frame_last_normalized, os.path.join(args.output_video, f"frame_{(frame_len - 1) * 2:04d}.png"))
+    # frame_last_normalized = (frame_last_normalized - frame_last_normalized.min()) / (frame_last_normalized.max() - frame_last_normalized.min())
+    save_image(frame_last_normalized, os.path.join(args.output_video, f"frame_{(frame_len - 1) * 10:04d}.png"))
+    # save_image(frame_last_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + args.index_from).zfill(args.zpad) + '.png')
+
 
 
 if __name__ == "__main__":
