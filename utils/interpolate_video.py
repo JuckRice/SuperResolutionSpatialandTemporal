@@ -21,7 +21,7 @@ parser.add_argument('--index_from', type=int, default=0, help='when index starts
 parser.add_argument('--zpad', type=int, default=4, help='zero padding of frame name.')
 
 parser.add_argument('--input_video', type=str, default='./sample_video')
-parser.add_argument('--output_video', type=str, default='./interpolated_video')
+parser.add_argument('--output_video', type=str, default='../test_results/interpolated_video')
 
 transform = transforms.Compose([transforms.ToTensor()])
 
@@ -88,14 +88,18 @@ def main():
 
         # interpolate
         frame1_normalized = frame1.clone()
-        # !Warning!: Normaliztaion might cause the interpolated frame to be dimmer than the original frames.
-        # frame1_normalized = (frame1_normalized - frame1_normalized.min()) / (frame1_normalized.max() - frame1_normalized.min())
-        # save_image(frame1_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + args.index_from).zfill(args.zpad) + '.png')
+        """
+        # !Notice: Normaliztaion might cause the interpolated frame to be dimmer than the original frames.
+        frame1_normalized = (frame1_normalized - frame1_normalized.min()) / (frame1_normalized.max() - frame1_normalized.min())
+        save_image(frame1_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + args.index_from).zfill(args.zpad) + '.png')
+        """
         save_image(frame1_normalized, os.path.join(args.output_video, f"frame_{((idx - args.index_from) * 10 + args.index_from):04d}.png"))
         
         frame_out_normalized = frame_out.clone()
-        # frame_out_normalized = (frame_out_normalized - frame_out_normalized.min()) / (frame_out_normalized.max() - frame_out_normalized.min())
-        # save_image(frame_out_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + 5 + args.index_from).zfill(args.zpad) + '.png')
+        """
+        frame_out_normalized = (frame_out_normalized - frame_out_normalized.min()) / (frame_out_normalized.max() - frame_out_normalized.min())
+        save_image(frame_out_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + 5 + args.index_from).zfill(args.zpad) + '.png')
+        """
         save_image(frame_out_normalized, os.path.join(args.output_video, f"frame_{((idx - args.index_from) * 10 + 5 + args.index_from):04d}.png"))
 
     # last frame
@@ -105,7 +109,6 @@ def main():
     frame_last_normalized = frame_last.clone()
     # frame_last_normalized = (frame_last_normalized - frame_last_normalized.min()) / (frame_last_normalized.max() - frame_last_normalized.min())
     save_image(frame_last_normalized, os.path.join(args.output_video, f"frame_{(frame_len - 1) * 10:04d}.png"))
-    # save_image(frame_last_normalized, args.output_video + '/' + str((idx - args.index_from) * 10 + args.index_from).zfill(args.zpad) + '.png')
 
 
 
