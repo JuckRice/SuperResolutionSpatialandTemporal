@@ -16,8 +16,8 @@ parser.add_argument('--config', type=str, default='./checkpoint/kernelsize_5/con
 parser.add_argument('--kernel_size', type=int, default=5)
 parser.add_argument('--dilation', type=int, default=1)
 
-parser.add_argument('--first_frame', type=str, default='./sample_twoframe/0.png')
-parser.add_argument('--second_frame', type=str, default='./sample_twoframe/1.png')
+parser.add_argument('--first_frame', type=str, default='./sample_twoframe/I0.png')
+parser.add_argument('--second_frame', type=str, default='./sample_twoframe/I1.png')
 parser.add_argument('--output_frame', type=str, default='./output.png')
 
 transform = transforms.Compose([transforms.ToTensor()])
