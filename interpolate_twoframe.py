@@ -52,7 +52,8 @@ def main():
 
     model = models.Model(args)
 
-    checkpoint = torch.load(args.checkpoint, map_location=torch.device('cpu'))
+    # checkpoint = torch.load(args.checkpoint, map_location=torch.device('cpu'))
+    checkpoint = torch.load(args.checkpoint, map_location=torch.device('cpu'), weights_only=True)
     model.load(checkpoint['state_dict'])
 
     frame_name1 = args.first_frame
@@ -63,7 +64,8 @@ def main():
 
     model.eval()
     frame_out = model(frame1, frame2)
-    imwrite(frame_out.clone(), args.output_frame, range=(0, 1))
+    # imwrite(frame_out.clone(), args.output_frame, range=(0, 1))
+    imwrite(frame_out.clone(), args.output_frame)
 
 
 if __name__ == "__main__":
