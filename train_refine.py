@@ -4,11 +4,10 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from models.refinenet import RefinementNet
 from losses.refineloss import charbonnier_loss
-from datasets.your_dataset import YourDataset  # 你需要根据已有代码适配
+from datasets.refine_dataset import RefineNetDataset
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# 1. 加载数据
 train_dataset = YourDataset(...)  # 包含 (I0, I1, AdaCoF_output, GT)
 train_loader = DataLoader(train_dataset, batch_size=8, shuffle=True)
 
