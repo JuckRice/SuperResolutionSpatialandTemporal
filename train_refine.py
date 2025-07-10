@@ -88,7 +88,10 @@ def main():
 
             end_time = time.time() # record end time for this epoch
 
-        print(f"[Epoch {epoch:03d}] Total: {avg_loss:.4f} | Charb: {avg_char:.4f} | Perc: {avg_perc:.4f} | Edge: {avg_edge:.4f} Time: {end_time - start_time:.2f}s")
+        print(f"[Epoch {epoch:03d}] Total: {avg_loss:.4f} | Charb: {avg_char:.4f}"
+              + (f" | Perc: {avg_perc:.4f}" if perceptual else "")
+              + (f" | Edge: {avg_edge:.4f}" if edge else "")
+              + (f" | Time: {end_time - start_time:.2f}s" if epoch > 1 else ""))
 
         # Save checkpoint every 5 epochs
         if epoch % 5 == 0:
