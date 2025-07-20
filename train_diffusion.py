@@ -13,6 +13,7 @@ parser.add_argument('--epochs', type=int, default=100)
 parser.add_argument('--batch_size', type=int, default=8)
 
 parser.add_argument('--save_dir', type=str, default='./checkpoints/diffusion_default')
+parser.add_argument('--save_freq', type=int, default=50, help="Checkpoint saving frequency")
 parser.add_argument('--data_root', type=str, default='../fast_motion_triplets')
 
 parser.add_argument('--lr', type=float, default=2e-4)
@@ -52,7 +53,7 @@ def main():
         avg_loss = total_loss / len(train_loader)
         print(f"[Epoch {epoch:03d}] Total Loss: {avg_loss:.4f}")
 
-        if epoch % 5 == 0:
+        if epoch % args.save_freq == 0:
             torch.save(model.state_dict(), os.path.join(args.save_dir, f"diffusion_epoch{epoch:03d}.pth"))
             print(f"✅ Saved checkpoint at epoch {epoch:03d}")
 
