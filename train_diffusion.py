@@ -6,6 +6,8 @@ from models.ddpm_refine import DiffusionRefine
 from datasets.refine_dataset import RefineNetDataset
 from torchvision import transforms
 import os
+from losses.refineloss import CombinedLoss
+
 
 parser = argparse.ArgumentParser(description="Train Diffusion Refiner for Frame Interpolation")
 
@@ -19,6 +21,8 @@ parser.add_argument('--data_root', type=str, default='../fast_motion_triplets')
 parser.add_argument('--lr', type=float, default=2e-4)
 parser.add_argument('--timesteps', type=int, default=1000, help="Diffusion time steps")
 
+
+criterion = CombinedLoss(w_c=1.0, w_p=0.1, w_e=0.05)
 
 def main():
     args = parser.parse_args()
