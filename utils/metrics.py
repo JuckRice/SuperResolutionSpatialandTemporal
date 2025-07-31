@@ -16,7 +16,9 @@ def calculate_psnr(img1, img2):
 def calculate_ssim(img1, img2):
     img1_np = img1.squeeze().detach().cpu().numpy().transpose(1, 2, 0)
     img2_np = img2.squeeze().detach().cpu().numpy().transpose(1, 2, 0)
-    return compare_ssim(img1_np, img2_np, multichannel=True, data_range=1.0)
+    # return compare_ssim(img1_np, img2_np, multichannel=True, data_range=1.0)
+    # win_size=3 适用于小图，channel_axis=2 替代 multichannel
+    return compare_ssim(img1_np, img2_np, win_size=3, channel_axis=2, data_range=1.0)
 
 def calculate_lpips(img1, img2):
     with torch.no_grad():
